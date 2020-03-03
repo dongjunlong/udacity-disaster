@@ -32,6 +32,7 @@ How to work
 
 2. Run the following command in the app's directory to run your web app.
     `python run.py`
-
+   after this,if no error,you can open browser to display the web app. 
 3. Go to http://0.0.0.0:3001/
+   in my project,go to https://view6914b2f4-3001.cn1-udacity-student-workspaces.com/
 
