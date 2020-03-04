@@ -1,16 +1,19 @@
 import json
 import plotly
 import pandas as pd
-
+import nltk
+import re
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Pie, Scatter
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
+nltk.download('stopwords')
 
 app = Flask(__name__)
 
@@ -39,9 +42,28 @@ model = joblib.load("../models/classifier.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    # chart 1
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    
+    # chart 2 
+    df_cat = df.drop(['message', 'original', 'genre'], axis=1)
+    cat_names = [col for col in df_cat.columns if col != 'id']
+    df_cat = pd.melt(df_cat, id_vars=['id'], value_vars=cat_names)
+    category_totals = df_cat.groupby('variable')['value'].sum()
+    category_totals.sort_values(ascending=True, inplace=True)
+    x_vals = category_totals.values.tolist()
+    y_vals = category_totals.index.tolist()
+    
+    # chart 3 
+    text = ' '.join(df['message']).lower()
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text)
+    words = word_tokenize(text)
+    words = pd.Series(words)
+    words = words[~words.isin(stopwords.words("english"))]
+    frequent_words=words.value_counts()[:10]
+  
+    frequent_word_names = list(frequent_words.index)
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -55,12 +77,53 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message Genres',
+                'title': 'chart 1: Distribution of Message Genres',
                 'yaxis': {
                     'title': "Count"
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=x_vals,
+                    y=y_vals,
+                    orientation='h',
+                    text=y_vals,
+                    textposition='auto'
+                )
+            ],
+
+            'layout': {
+                'title': 'chart 2: Distribution of Message Categories',
+                'yaxis': {
+                    'showticklabels': False
+                },
+                'xaxis': {
+                    'title': "Messages"
+                },
+                'autosize': False,
+                'width': 500,
+                'height': 1000,
+                'showlegend': False
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=frequent_word_names,
+                    y=frequent_words
+                )],
+            'layout': {
+                'title': 'chart 3: Most Frequent Words top 10',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Words"
                 }
             }
         }

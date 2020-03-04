@@ -34,5 +34,9 @@ How to work
     `python run.py`
    after this,if no error,you can open browser to display the web app. 
 3. Go to http://0.0.0.0:3001/
-   in my project,go to https://view6914b2f4-3001.cn1-udacity-student-workspaces.com/
+
+	use env|grep to find the server address
+	Go to browser and use
+	https://SPACEID-3001.SPACEDOMAIN
+    in my project,go to https://view6914b2f4-3001.cn1-udacity-student-workspaces.com/
 
