@@ -18,6 +18,12 @@ nltk.download('stopwords')
 app = Flask(__name__)
 
 def tokenize(text):
+    """Tokenizes a text into words.
+    Args:
+        text: Text field to be tokenized
+    Returns:
+        List of the text's words in lowercase
+    """
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -40,7 +46,11 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
+    """Analyzes data and creates graphs
     
+    Returns:
+        Flask object for rendering graphs on webpage
+    """   
     # extract data needed for visuals
     # chart 1
     genre_counts = df.groupby('genre').count()['message']
