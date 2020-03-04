@@ -77,7 +77,7 @@ def build_model():
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier())),
     ])
-
+    # process run slower
     # parameters = {
         # #'vect__ngram_range': ((1, 1), (1, 2)),
         # 'vect__max_df': (0.5, 1.0),
